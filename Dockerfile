@@ -17,4 +17,4 @@ ENV PROXY_PASS=WhatisThis?!13F!
 EXPOSE 8081/tcp
 
 # Start command with dual-stack listening (IPv4 + IPv6)
-CMD ["sh", "-c", "glider -listen \"http+socks5://:8081?auth=${PROXY_USER}:${PROXY_PASS}\" -listen \"http+socks5://[::]:8081?auth=${PROXY_USER}:${PROXY_PASS}\" -verbose"]
+CMD ["sh", "-c", "glider -listen \":8081?auth=${PROXY_USER}:${PROXY_PASS}\" -listen \"[::]:8081?auth=${PROXY_USER}:${PROXY_PASS}\" -verbose"]
