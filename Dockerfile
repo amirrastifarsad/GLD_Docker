@@ -26,5 +26,4 @@ ENV PROXY_PASS=WhatisThisPass
 EXPOSE 8081/tcp
 
 # Start command with dual-stack listening (IPv4 + IPv6)
-CMD ["sh","-c",".\usr\bin\husarnet join fc94:b01d:1803:8dd8:b293:5c7d:7639:932a/HwfD2KFoTHQbSyTrhErzqu render-the-ai"]
-CMD ["sh", "-c", "glider -listen \"[::]:8099?auth=${PROXY_USER}:${PROXY_PASS}\" -verbose"]
+CMD ["sh", "-c", ".\usr\bin\husarnet join fc94:b01d:1803:8dd8:b293:5c7d:7639:932a/HwfD2KFoTHQbSyTrhErzqu render-the-ai ; glider -listen \"[::]:8099?auth=${PROXY_USER}:${PROXY_PASS}\" -verbose"]
