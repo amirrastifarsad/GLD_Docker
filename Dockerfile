@@ -1,0 +1,20 @@
+# Use lightweight Alpine Linux base
+FROM alpine:latest
+
+# Install glider and clean up
+RUN apk add --no-cache wget ca-certificates && \
+    wget https://github.com/nadoo/glider/releases/download/v0.16.4/glider_0.16.4_linux_amd64.tar.gz && \
+    tar -xzf glider_*.tar.gz && \
+    mv glider /usr/local/bin/ && \
+    rm glider_*.tar.gz && \
+    apk del wget
+
+# Set credentials (change these values before building!)
+ENV PROXY_USER=Prof
+ENV PROXY_PASS=WhatisThis?!13F!
+
+# Expose proxy port
+EXPOSE 8081/tcp
+
+# Start command with dual-stack listening (IPv4 + IPv6)
+CMD ["sh", "-c", "glider -listen \"http+socks5://:8081?auth=${PROXY_USER}:${PROXY_PASS}\" -listen \"http+socks5://[::]:8081?auth=${PROXY_USER}:${PROXY_PASS}\" -verbose"]
