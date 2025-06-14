@@ -4,8 +4,8 @@ FROM alpine:latest
 # Install glider and clean up
 RUN apk add --no-cache wget tar 
 
-RUN https://install.husarnet.com/tar/husarnet-latest-amd64.tar && \
-    nohup .\usr\bin\husarnet-daemon &
+RUN wget https://install.husarnet.com/tar/husarnet-latest-amd64.tar
+RUN nohup .\usr\bin\husarnet-daemon &
 
 
 
