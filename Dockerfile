@@ -11,7 +11,7 @@ RUN tar -xzf glider_0.16.4_linux_amd64.tar.gz && \
 
 # Set credentials (change these values before building!)
 ENV PROXY_USER=Prof
-ENV PROXY_PASS=WhatisThis?!13F!
+ENV PROXY_PASS=WhatisThisPass
 
 # Expose proxy port
 EXPOSE 8081/tcp
