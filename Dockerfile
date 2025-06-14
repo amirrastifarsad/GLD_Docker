@@ -20,7 +20,8 @@ ENV PROXY_USER=Prof
 ENV PROXY_PASS=WhatisThisPass
 
 # Expose proxy port
-EXPOSE 8081/tcp
+EXPOSE 8099/tcp
 
 # Start command with dual-stack listening (IPv4 + IPv6)
-CMD ["sh", "-c", "nohup usr/bin/husarnet-daemon & sleep 5 ; usr/bin/husarnet join fc94:b01d:1803:8dd8:b293:5c7d:7639:932a/HwfD2KFoTHQbSyTrhErzqu render-the-ai ; glider -listen \"[::]:8099?auth=${PROXY_USER}:${PROXY_PASS}\" -verbose"]
+#nohup usr/bin/husarnet-daemon & sleep 5 ; usr/bin/husarnet join fc94:b01d:1803:8dd8:b293:5c7d:7639:932a/HwfD2KFoTHQbSyTrhErzqu render-the-ai ;
+CMD ["sh", "-c", "glider -listen \"[::]:8099?auth=${PROXY_USER}:${PROXY_PASS}\" -verbose"]
