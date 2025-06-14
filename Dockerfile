@@ -4,9 +4,9 @@ FROM alpine:latest
 # Install glider and clean up
 RUN apk add --no-cache wget tar 
 RUN wget https://github.com/nadoo/glider/releases/download/v0.16.4/glider_0.16.4_linux_amd64.tar.gz 
-RUN tar -xzf glider_*.tar.gz && \
-    mv glider /usr/local/bin/ && \
-    rm glider_*.tar.gz && \
+RUN tar -xzf glider_0.16.4_linux_amd64.tar.gz && \
+    mv glider_0.16.4_linux_amd64/glider /usr/local/bin/ && \
+    rm glider_0.16.4_linux_amd64.tar.gz && \
     apk del wget
 
 # Set credentials (change these values before building!)
