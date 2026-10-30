@@ -2,27 +2,38 @@
 set -u
 
 BIN="/usr/local/bin/proxy_agent"
-INTERVAL=900        # 15 minutes, in seconds
-KILL_AFTER=10       # seconds to wait after SIGTERM before SIGKILL
+STATE="/state"
+INTERVAL="${RESTART_INTERVAL:-900}"
+KILL_AFTER="${KILL_AFTER:-10}"
+PORT="${PORT:-8080}"
+
+mkdir -p "$STATE"
+
+# BusyBox httpd serves /www; CGI is enabled for /www/cgi-bin/ automatically.
+busybox httpd -f -p "$PORT" -h /www &
+HTTPD_PID=$!
 
 child=""
-
 cleanup() {
     trap - TERM INT
-    if [ -n "$child" ]; then
-        kill -TERM "$child" 2>/dev/null || true
-        wait "$child" 2>/dev/null || true
-    fi
+    [ -n "$child" ] && kill -TERM "$child" 2>/dev/null
+    kill -TERM "$HTTPD_PID" 2>/dev/null
+    wait 2>/dev/null
     exit 0
 }
 trap cleanup TERM INT
 
 while :; do
-    # Run the agent; SIGTERM it after INTERVAL, SIGKILL 10 s later.
-    timeout -s TERM -k "$KILL_AFTER" "$INTERVAL" "$BIN" &
+    date -u +"%Y-%m-%dT%H:%M:%SZ" > "$STATE/last_start"
+    date +%s                     > "$STATE/last_start_epoch"
+
+    # Truncate the log each run, so /state/last_run.log is always "the last run only".
+    timeout -s TERM -k "$KILL_AFTER" "$INTERVAL" "$BIN" > "$STATE/last_run.log" 2>&1 &
     child=$!
-    wait "$child" 2>/dev/null || true
+    wait "$child"; rc=$?
     child=""
-    # Guard against hot-looping if the binary exits immediately.
+
+    date -u +"%Y-%m-%dT%H:%M:%SZ" > "$STATE/last_stop"
+    echo "$rc"                    > "$STATE/last_exit"
     sleep 1
 done
