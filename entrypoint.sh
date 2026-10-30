@@ -5,7 +5,7 @@ BIN="/usr/local/bin/proxy_agent"
 STATE="${STATE_DIR:-/state}"
 INTERVAL="${RESTART_INTERVAL:-900}"
 KILL_AFTER="${KILL_AFTER:-10}"
-PORT="${PORT:-8080}"
+PORT="${PORT:-80}"
 
 mkdir -p "$STATE"
 
