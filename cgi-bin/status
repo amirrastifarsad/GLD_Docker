@@ -1,0 +1,42 @@
+#!/bin/sh
+set -u
+
+STATE="${STATE_DIR:-/state}"
+
+read_or() {
+    if [ -r "$1" ]; then cat "$1"; else printf '%s' "${2:-}"; fi
+}
+
+start_iso=$(read_or "$STATE/last_start" "unknown")
+start_epoch=$(read_or "$STATE/last_start_epoch" "0")
+stop_iso=$(read_or "$STATE/last_stop" "")
+exit_code=$(read_or "$STATE/last_exit" "")
+
+case "$start_epoch" in ''|*[!0-9]*) start_epoch=0 ;; esac
+now=$(date +%s)
+uptime=$(( now - start_epoch ))
+[ "$uptime" -lt 0 ] && uptime=0
+
+# optional ?lines=N -> tail the log
+lines=""
+case "${QUERY_STRING:-}" in
+    *lines=*) lines=$(printf '%s' "$QUERY_STRING" | sed -n 's/.*lines=\([0-9][0-9]*\).*/\1/p') ;;
+esac
+
+printf 'Content-Type: application/json\r\nCache-Control: no-store\r\n\r\n'
+printf '{\n'
+printf '  "last_restart_utc": "%s",\n' "$start_iso"
+printf '  "uptime_seconds": %s,\n'     "$uptime"
+printf '  "last_stop_utc": "%s",\n'    "$stop_iso"
+printf '  "last_exit_code": "%s",\n'   "$exit_code"
+printf '  "output": "'
+if [ -r "$STATE/last_run.log" ]; then
+    if [ -n "$lines" ]; then
+        tail -n "$lines" "$STATE/last_run.log"
+    else
+        cat "$STATE/last_run.log"
+    fi | awk 'BEGIN{ORS=""}
+              { gsub(/\\/,"\\\\"); gsub(/"/,"\\\""); gsub(/\t/,"\\t");
+                gsub(/\r/,""); printf "%s\\n", $0 }'
+fi
+printf '"\n}\n'
