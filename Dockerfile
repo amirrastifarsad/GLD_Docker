@@ -27,7 +27,7 @@ COPY entrypoint.sh                    /usr/local/bin/entrypoint.sh
 COPY router.php                       /www/router.php
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-EXPOSE 8080
+EXPOSE 10000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
   CMD wget -qO- "http://127.0.0.1:${PORT}/status" >/dev/null || exit 1
 
