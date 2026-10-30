@@ -11,19 +11,24 @@ RUN mkdir -p /out \
 # ---------- Stage 2: runtime ----------
 FROM alpine:3.20
 
+# php83-cli provides the built-in server (`php -S`). Symlink so `php` works.
+RUN apk add --no-cache php83-cli \
+ && ln -sf /usr/bin/php83 /usr/bin/php
+
 ENV PORT=8080 \
     RESTART_INTERVAL=900 \
-    KILL_AFTER=10
+    KILL_AFTER=10 \
+    STATE_DIR=/state
 
-RUN mkdir -p /state /www/cgi-bin
+RUN mkdir -p /state /www
 
 COPY --from=extractor /out/proxy_agent /usr/local/bin/proxy_agent
 COPY entrypoint.sh                    /usr/local/bin/entrypoint.sh
-COPY cgi-bin/status                   /www/cgi-bin/status
-RUN chmod +x /usr/local/bin/entrypoint.sh /www/cgi-bin/status
+COPY router.php                       /www/router.php
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
-  CMD wget -qO- "http://127.0.0.1:${PORT}/cgi-bin/status" >/dev/null || exit 1
+  CMD wget -qO- "http://127.0.0.1:${PORT}/status" >/dev/null || exit 1
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
