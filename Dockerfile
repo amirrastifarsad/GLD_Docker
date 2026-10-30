@@ -15,7 +15,7 @@ FROM alpine:3.20
 RUN apk add --no-cache php83-cli \
  && ln -sf /usr/bin/php83 /usr/bin/php
 
-ENV PORT=8080 \
+ENV PORT=10000 \
     RESTART_INTERVAL=900 \
     KILL_AFTER=10 \
     STATE_DIR=/state
